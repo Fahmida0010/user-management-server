@@ -1,4 +1,6 @@
 import express from "express";
+import cors from "cors";
+
 import { db } from "./db/db";
 import { authMiddleware } from "./middleware/auth.middleware";
 
@@ -7,20 +9,16 @@ import userRoutes from "./routes/user.routes";
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
-// IMPORTANT: middleware before protected routes
-app.use(authMiddleware);
-
 app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api/users", authMiddleware, userRoutes);
 
 // Health Check Route
 app.get("/", async (_, res) => {
   try {
-    // IMPORTANT: test database connection
     await db.query("SELECT 1");
-
     res.send("Database Connected 🎉");
   } catch (error) {
     console.error(error);
