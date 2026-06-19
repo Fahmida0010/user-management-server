@@ -7,13 +7,13 @@ export const sendEmail = async (email: string, link: string) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "yourgmail@gmail.com",
-      pass: "your_app_password",
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
     },
   });
 
   await transporter.sendMail({
-    from: "Task App",
+    from:process.env.EMAIL_USER,
     to: email,
     subject: "Verify your account",
     text: `Click to verify: ${link}`,
