@@ -20,9 +20,9 @@ export const getUsers = async (
         name,
         email,
         status,
-        last_login_time
+        last_login
       FROM users
-      ORDER BY last_login_time DESC NULLS LAST
+      ORDER BY last_login DESC NULLS LAST
       `
     );
 
