@@ -33,11 +33,16 @@ export const register = async (req: any, res: any) => {
 
     // IMPORTANT:
     // email sending works asynchronously
-    const verifyLink =
-      `http://localhost:5000/api/auth/verify/${email}`;
+  const verifyToken = jwt.sign(
+  { email },
+  JWT_SECRET,
+  { expiresIn: "1d" }
+);
 
+const verifyLink =
+  `${process.env.FRONTEND_URL}/verify-email/${verifyToken}`;
 
-    sendEmail(email, verifyLink);
+await sendEmail(email, verifyLink);
 
 
     res.json({
@@ -122,13 +127,14 @@ export const login = async (req:any,res:any)=>{
   }
 
 
+console.log("Updating last login:", user.id);
 
   // IMPORTANT:
   // update last login time for sorting table
   await db.query(
     `
     UPDATE users
-    SET last_login_time=CURRENT_TIMESTAMP
+    SET last_login=CURRENT_TIMESTAMP
     WHERE id=$1
     `,
     [user.id]
@@ -171,33 +177,29 @@ export const login = async (req:any,res:any)=>{
 
 
 // VERIFY EMAIL
-export const verifyEmail = async(req:any,res:any)=>{
+export const verifyEmail = async (req: any, res: any) => {
+  try {
+    const { token } = req.params;
 
- try {
+    const decoded: any = jwt.verify(
+      token,
+      JWT_SECRET
+    );
 
-  const { email } = req.params;
+    await db.query(
+      `
+      UPDATE users
+      SET status='active'
+      WHERE email=$1
+      `,
+      [decoded.email]
+    );
 
+    res.redirect(
+      `${process.env.FRONTEND_URL}/email-verified`
+    );
 
-
-  await db.query(
-    `
-    UPDATE users
-    SET status='active'
-    WHERE email=$1
-    AND status='unverified'
-    `,
-    [email]
-  );
-
-
-
-  res.send("Email verified");
-
-
- } catch(error:any){
-
-  res.status(500).send(error.message);
-
- }
-
+  } catch (error) {
+    res.status(400).send("Invalid verification link");
+  }
 };
