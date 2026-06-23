@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { db } from "../db/db";
 
 
-const JWT_SECRET = "secret_key";
+const JWT =process.env.JWT_SECRET as string;;
 
 
 export const authMiddleware = async (
@@ -34,7 +34,7 @@ export const authMiddleware = async (
 
     const decoded: any = jwt.verify(
       token,
-      JWT_SECRET
+      JWT
     );
 
 

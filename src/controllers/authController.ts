@@ -41,7 +41,7 @@ export const register = async (req: any, res: any) => {
 );
 
 const verifyLink =
-  `${process.env.FRONTEND_URL}/verify-email/${verifyToken}`;
+  `${process.env.FRONTEND_URL}/email-verify/${verifyToken}`;
 
 await sendEmail(email, verifyLink);
 
