@@ -65,7 +65,8 @@ export const authMiddleware = async (
 
 
   } catch (err) {
-
+   console.log("JWT ERROR:", err);
+   
     return res.status(401).json({
       message: "Invalid token"
     });

@@ -9,7 +9,6 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 
 // REGISTER
 export const register = async (req: any, res: any) => {
-  console.log("REGISTER HIT");
   try {
 
     const { name, email, password } = req.body;
